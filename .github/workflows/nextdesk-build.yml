@@ -308,6 +308,18 @@ jobs:
           pip3 install requests argparse
           BASE_URL=${{ env.SIGN_BASE_URL }} SECRET_KEY=${{ secrets.SIGN_SECRET_KEY }} python3 res/job.py sign_files ./rustdesk/
 
+      - name: Add persistent NextDesk Remote launcher
+        if: matrix.job.arch == 'x64'
+        shell: pwsh
+        run: |
+          $releaseDir = "flutter/build/windows/x64/runner/Release"
+          $source = Join-Path $releaseDir "rustdesk.exe"
+          $target = Join-Path $releaseDir "NextDeskRemote.exe"
+          if (-not (Test-Path -LiteralPath $source)) {
+            throw "The Windows launcher was not found at $source"
+          }
+          Copy-Item -LiteralPath $source -Destination $target -Force
+
       - name: Build self-extracted executable
         shell: bash
         if: env.UPLOAD_ARTIFACT == 'true'

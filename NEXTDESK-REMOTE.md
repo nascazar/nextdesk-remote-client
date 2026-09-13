@@ -1,6 +1,6 @@
 # NextDesk Remote native client
 
-Native Windows client derived from RustDesk 1.4.9 and built by the official RustDesk Windows pipeline.
+Native Windows client derived from RustDesk and built by the official RustDesk Windows pipeline.
 
 ## Product configuration
 
@@ -10,6 +10,8 @@ Native Windows client derived from RustDesk 1.4.9 and built by the official Rust
 - RustDesk server public key: embedded at build time
 - Target: Windows x64
 - Output: self-contained portable EXE and MSI
+- Current NextDesk release: 1.4.10
+- Web protocol: rustdesk://, registered to the branded NextDesk Remote executable
 
 The build is intentionally isolated from the NextDesk production application and repositories.
 

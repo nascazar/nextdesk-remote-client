@@ -2283,6 +2283,8 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
   String? id;
   String? password;
   String? switchUuid;
+  String? nextDeskApi;
+  String? nextDeskToken;
   bool? forceRelay;
   for (int i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -2331,6 +2333,14 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
         switchUuid = args[i + 1];
         i++;
         break;
+      case '--nextdesk-api':
+        nextDeskApi = args[i + 1];
+        i++;
+        break;
+      case '--nextdesk-token':
+        nextDeskToken = args[i + 1];
+        i++;
+        break;
       case '--relay':
         forceRelay = true;
         break;
@@ -2345,7 +2355,9 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
           rustDeskWinManager.newRemoteDesktop(id!,
               password: password,
               switchUuid: switchUuid,
-              forceRelay: forceRelay);
+              forceRelay: forceRelay,
+              nextDeskApi: nextDeskApi,
+              nextDeskToken: nextDeskToken);
         });
         break;
       case UriLinkType.fileTransfer:
@@ -2513,6 +2525,10 @@ List<String>? urlLinkToCmdArgs(Uri uri) {
     if (password != null) args.addAll(['--password', password]);
     String? switch_uuid = param["switch_uuid"];
     if (switch_uuid != null) args.addAll(['--switch_uuid', switch_uuid]);
+    String? nextdeskApi = param["nextdesk_api"];
+    if (nextdeskApi != null) args.addAll(['--nextdesk-api', nextdeskApi]);
+    String? nextdeskToken = param["nextdesk_token"];
+    if (nextdeskToken != null) args.addAll(['--nextdesk-token', nextdeskToken]);
     if (param["relay"] != null) args.add("--relay");
     return args;
   }

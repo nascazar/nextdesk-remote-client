@@ -12,6 +12,7 @@ import '../../consts.dart';
 import '../../common/widgets/overlay.dart';
 import '../../common/widgets/remote_input.dart';
 import '../../common.dart';
+import '../../common/remote_session_tracker.dart';
 import '../../common/widgets/dialog.dart';
 import '../../common/widgets/toolbar.dart';
 import '../../models/model.dart';
@@ -45,6 +46,8 @@ class RemotePage extends StatefulWidget {
     this.switchUuid,
     this.forceRelay,
     this.isSharedPassword,
+    this.nextDeskApi,
+    this.nextDeskToken,
   }) : super(key: key) {
     initSharedStates(id);
   }
@@ -59,6 +62,8 @@ class RemotePage extends StatefulWidget {
   final String? switchUuid;
   final bool? forceRelay;
   final bool? isSharedPassword;
+  final String? nextDeskApi;
+  final String? nextDeskToken;
   final SimpleWrapper<State<RemotePage>?> _lastState = SimpleWrapper(null);
   final DesktopTabController? tabController;
 
@@ -101,6 +106,7 @@ class _RemotePageState extends State<RemotePage>
   Function(bool)? _onEnterOrLeaveImage4Toolbar;
 
   late FFI _ffi;
+  RemoteSessionTracker? _remoteSessionTracker;
   Worker? _waylandKeyboardModeWorker;
   bool _waylandKeyboardModeNormalized = false;
   bool _waylandKeyboardModeNormalizing = false;
@@ -121,6 +127,7 @@ class _RemotePageState extends State<RemotePage>
   @override
   void initState() {
     super.initState();
+    _remoteSessionTracker = RemoteSessionTracker.create(widget.nextDeskApi, widget.nextDeskToken);
     _ffi = FFI(widget.sessionId);
     Get.put<FFI>(_ffi, tag: widget.id);
     _ffi.imageModel.addCallbackOnFirstImage((String peerId) {
@@ -148,7 +155,11 @@ class _RemotePageState extends State<RemotePage>
     });
     WakelockManager.enable(_uniqueKey);
 
-    _ffi.ffiModel.updateEventListener(sessionId, widget.id);
+    _ffi.ffiModel.updateEventListener(
+      sessionId,
+      widget.id,
+      onConnectionReady: _remoteSessionTracker?.connected,
+    );
     if (!isWeb) bind.pluginSyncUi(syncTo: kAppTypeDesktopRemote);
     _ffi.qualityMonitorModel.checkShowQualityMonitor(sessionId);
     _ffi.dialogManager.loadMobileActionsOverlayVisible();
@@ -379,6 +390,7 @@ class _RemotePageState extends State<RemotePage>
     _rawKeyFocusNode.dispose();
     if (closeSession) {
       clearWaylandKeyboardPromptSuppressedForConnection(sessionId.toString());
+      await _remoteSessionTracker?.ended();
     }
     await _ffi.close(closeSession: closeSession);
     _timer?.cancel();

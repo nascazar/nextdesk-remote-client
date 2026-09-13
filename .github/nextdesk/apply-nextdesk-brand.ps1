@@ -27,6 +27,10 @@ Replace-Required "flutter/windows/runner/Runner.rc" 'VALUE "FileDescription", "R
 Replace-Required "flutter/windows/runner/Runner.rc" 'VALUE "ProductName", "RustDesk" "\0"' 'VALUE "ProductName", "NextDesk Remote" "\0"'
 Replace-Required "flutter/windows/runner/main.cpp" 'std::wstring app_name = L"RustDesk";' 'std::wstring app_name = L"NextDeskRemote";'
 Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "flutter/windows/runner/resources/app_icon.ico" -Force
+Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "flutter/assets/icon.ico" -Force
+Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "res/icon.ico" -Force
+Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "res/tray-icon.ico" -Force
+Copy-Item -LiteralPath ".github/nextdesk/app_icon.png" -Destination "res/icon.png" -Force
 Copy-Item -LiteralPath ".github/nextdesk/nextdesk_logo.png" -Destination "flutter/assets/logo.png" -Force
 Copy-Item -LiteralPath ".github/nextdesk/nextdesk_logo.png" -Destination "flutter/assets/logo_light.png" -Force
 Copy-Item -LiteralPath ".github/nextdesk/nextdesk_logo.png" -Destination "flutter/assets/logo_dark.png" -Force

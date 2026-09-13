@@ -17,6 +17,8 @@ function Assert-NotContains([string]$Path, [string]$Unexpected) {
 Assert-Contains "Cargo.toml" 'ProductName = "NextDesk Remote"'
 Assert-Contains "Cargo.toml" 'FileDescription = "NextDesk Remote"'
 Assert-NotContains "Cargo.toml" 'FileDescription = "RustDesk Remote Desktop"'
+Assert-Contains ".github/workflows/nextdesk-build.yml" "if: matrix.job.arch == 'x86_64'"
+Assert-Contains ".github/workflows/nextdesk-build.yml" '$releaseDir = "rustdesk"'
 Assert-Contains "flutter/windows/runner/Runner.rc" 'VALUE "FileDescription", "NextDesk Remote" "\0"'
 Assert-Contains "src/platform/windows.rs" '"URL:NextDesk Remote Protocol"'
 Assert-Contains "src/platform/windows.rs" '"rustdesk".to_owned()'

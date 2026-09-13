@@ -10,7 +10,7 @@ Native Windows client derived from RustDesk and built by the official RustDesk W
 - RustDesk server public key: embedded at build time
 - Target: Windows x64
 - Output: self-contained portable EXE and MSI
-- Current NextDesk release: 1.4.10
+- Current NextDesk release: 1.4.11
 - Web protocol: rustdesk://, registered to the branded NextDesk Remote executable
 
 The build is intentionally isolated from the NextDesk production application and repositories.

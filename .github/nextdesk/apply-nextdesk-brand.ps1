@@ -20,10 +20,10 @@ pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = RwLock::new(H
     ]));
 '@
 Replace-Required "Cargo.toml" 'ProductName = "RustDesk"' 'ProductName = "NextDesk Remote"'
-Replace-Required "Cargo.toml" 'FileDescription = "RustDesk Remote Desktop"' 'FileDescription = "NextDesk secure remote assistance"'
+Replace-Required "Cargo.toml" 'FileDescription = "RustDesk Remote Desktop"' 'FileDescription = "NextDesk Remote"'
 Replace-Required "libs/portable/Cargo.toml" 'ProductName = "RustDesk"' 'ProductName = "NextDesk Remote"'
-Replace-Required "libs/portable/Cargo.toml" 'FileDescription = "RustDesk Remote Desktop"' 'FileDescription = "NextDesk secure remote assistance"'
-Replace-Required "flutter/windows/runner/Runner.rc" 'VALUE "FileDescription", "RustDesk Remote Desktop" "\0"' 'VALUE "FileDescription", "NextDesk secure remote assistance" "\0"'
+Replace-Required "libs/portable/Cargo.toml" 'FileDescription = "RustDesk Remote Desktop"' 'FileDescription = "NextDesk Remote"'
+Replace-Required "flutter/windows/runner/Runner.rc" 'VALUE "FileDescription", "RustDesk Remote Desktop" "\0"' 'VALUE "FileDescription", "NextDesk Remote" "\0"'
 Replace-Required "flutter/windows/runner/Runner.rc" 'VALUE "ProductName", "RustDesk" "\0"' 'VALUE "ProductName", "NextDesk Remote" "\0"'
 Replace-Required "flutter/windows/runner/main.cpp" 'std::wstring app_name = L"RustDesk";' 'std::wstring app_name = L"NextDeskRemote";'
 Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "flutter/windows/runner/resources/app_icon.ico" -Force

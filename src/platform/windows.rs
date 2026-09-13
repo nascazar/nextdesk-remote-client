@@ -1499,6 +1499,18 @@ fn get_after_install(
 ) -> String {
     let app_name = crate::get_app_name();
     let ext = app_name.to_lowercase();
+    // NextDesk keeps the upstream rustdesk:// deep-link format used by the web
+    // console, but owns the protocol registration with its branded executable.
+    let protocol = if app_name.eq_ignore_ascii_case("NextDeskRemote") {
+        "rustdesk".to_owned()
+    } else {
+        ext.clone()
+    };
+    let protocol_label = if app_name.eq_ignore_ascii_case("NextDeskRemote") {
+        "URL:NextDesk Remote Protocol".to_owned()
+    } else {
+        format!("URL:{app_name} Protocol")
+    };
 
     // reg delete HKEY_CURRENT_USER\Software\Classes for
     // https://github.com/rustdesk/rustdesk/commit/f4bdfb6936ae4804fc8ab1cf560db192622ad01a
@@ -1539,12 +1551,13 @@ fn get_after_install(
     reg add HKEY_CLASSES_ROOT\\.{ext}\\shell\\open /f
     reg add HKEY_CLASSES_ROOT\\.{ext}\\shell\\open\\command /f
     reg add HKEY_CLASSES_ROOT\\.{ext}\\shell\\open\\command /f /ve /t REG_SZ /d \"\\\"{exe}\\\" --play \\\"%%1\\\"\"
-    reg add HKEY_CLASSES_ROOT\\{ext} /f
-    reg add HKEY_CLASSES_ROOT\\{ext} /f /v \"URL Protocol\" /t REG_SZ /d \"\"
-    reg add HKEY_CLASSES_ROOT\\{ext}\\shell /f
-    reg add HKEY_CLASSES_ROOT\\{ext}\\shell\\open /f
-    reg add HKEY_CLASSES_ROOT\\{ext}\\shell\\open\\command /f
-    reg add HKEY_CLASSES_ROOT\\{ext}\\shell\\open\\command /f /ve /t REG_SZ /d \"\\\"{exe}\\\" \\\"%%1\\\"\"
+    reg add HKEY_CLASSES_ROOT\\{protocol} /f /ve /t REG_SZ /d \"{protocol_label}\"
+    reg add HKEY_CLASSES_ROOT\\{protocol} /f /v \"URL Protocol\" /t REG_SZ /d \"\"
+    reg add HKEY_CLASSES_ROOT\\{protocol}\\DefaultIcon /f /ve /t REG_SZ /d \"\\\"{exe}\\\",0\"
+    reg add HKEY_CLASSES_ROOT\\{protocol}\\shell /f
+    reg add HKEY_CLASSES_ROOT\\{protocol}\\shell\\open /f
+    reg add HKEY_CLASSES_ROOT\\{protocol}\\shell\\open\\command /f
+    reg add HKEY_CLASSES_ROOT\\{protocol}\\shell\\open\\command /f /ve /t REG_SZ /d \"\\\"{exe}\\\" \\\"%%1\\\"\"
     netsh advfirewall firewall add rule name=\"{app_name} Service\" dir=out action=allow program=\"{exe}\" enable=yes
     netsh advfirewall firewall add rule name=\"{app_name} Service\" dir=in action=allow program=\"{exe}\" enable=yes
     {create_service}
@@ -1765,6 +1778,16 @@ pub fn run_before_uninstall() -> ResultType<()> {
 fn get_before_uninstall(kill_self: bool) -> String {
     let app_name = crate::get_app_name();
     let ext = app_name.to_lowercase();
+    let protocol = if app_name.eq_ignore_ascii_case("NextDeskRemote") {
+        "rustdesk"
+    } else {
+        ext.as_str()
+    };
+    let delete_protocol = if protocol == ext.as_str() {
+        String::new()
+    } else {
+        format!("reg delete HKEY_CLASSES_ROOT\\\\{protocol} /f")
+    };
     let filter = if kill_self {
         "".to_string()
     } else {
@@ -1779,6 +1802,7 @@ fn get_before_uninstall(kill_self: bool) -> String {
     taskkill /F /IM {app_name}.exe{filter}
     reg delete HKEY_CLASSES_ROOT\\.{ext} /f
     reg delete HKEY_CLASSES_ROOT\\{ext} /f
+    {delete_protocol}
     netsh advfirewall firewall delete rule name=\"{app_name} Service\"
     ",
         broker_exe = WIN_TOPMOST_INJECTED_PROCESS_EXE,

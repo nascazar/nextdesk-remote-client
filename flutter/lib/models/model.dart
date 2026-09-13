@@ -332,7 +332,8 @@ class FfiModel with ChangeNotifier {
   }
 
   // todo: why called by two position
-  StreamEventHandler startEventListener(SessionID sessionId, String peerId) {
+  StreamEventHandler startEventListener(SessionID sessionId, String peerId,
+      {Future<void> Function()? onConnectionReady}) {
     return (evt) async {
       var name = evt['name'];
       if (name == 'msgbox') {
@@ -351,6 +352,7 @@ class FfiModel with ChangeNotifier {
         setConnectionType(peerId, evt['secure'] == 'true',
             evt['direct'] == 'true', evt['stream_type'] ?? '');
         resetRestartReconnectState();
+        await onConnectionReady?.call();
       } else if (name == 'switch_display') {
         // switch display is kept for backward compatibility
         handleSwitchDisplay(evt, sessionId, peerId);
@@ -774,8 +776,13 @@ class FfiModel with ChangeNotifier {
   }
 
   /// Bind the event listener to receive events from the Rust core.
-  updateEventListener(SessionID sessionId, String peerId) {
-    platformFFI.setEventCallback(startEventListener(sessionId, peerId));
+  updateEventListener(SessionID sessionId, String peerId,
+      {Future<void> Function()? onConnectionReady}) {
+    platformFFI.setEventCallback(startEventListener(
+      sessionId,
+      peerId,
+      onConnectionReady: onConnectionReady,
+    ));
   }
 
   _handlePortableServiceRunning(String peerId, Map<String, dynamic> evt) {

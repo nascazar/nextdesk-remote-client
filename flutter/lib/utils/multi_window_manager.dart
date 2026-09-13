@@ -230,6 +230,8 @@ class RustDeskMultiWindowManager {
     bool? isRDP,
     bool? isSharedPassword,
     String? connToken,
+    String? nextDeskApi,
+    String? nextDeskToken,
   }) async {
     var params = {
       "type": type.index,
@@ -249,6 +251,8 @@ class RustDeskMultiWindowManager {
     if (connToken != null) {
       params['connToken'] = connToken;
     }
+    if (nextDeskApi != null) params['nextdesk_api'] = nextDeskApi;
+    if (nextDeskToken != null) params['nextdesk_token'] = nextDeskToken;
     final msg = jsonEncode(params);
 
     // separate window for file transfer is not supported
@@ -273,6 +277,8 @@ class RustDeskMultiWindowManager {
     bool? isSharedPassword,
     String? switchUuid,
     bool? forceRelay,
+    String? nextDeskApi,
+    String? nextDeskToken,
   }) async {
     return await newSession(
       WindowType.RemoteDesktop,
@@ -283,6 +289,8 @@ class RustDeskMultiWindowManager {
       forceRelay: forceRelay,
       switchUuid: switchUuid,
       isSharedPassword: isSharedPassword,
+      nextDeskApi: nextDeskApi,
+      nextDeskToken: nextDeskToken,
     );
   }
 

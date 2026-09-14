@@ -102,9 +102,13 @@ jobs:
         run: |
           $expected = "${{ env.VERSION }}"
           $cargoVersion = (Select-String -Path Cargo.toml -Pattern '^version\s*=\s*"([^"]+)"' | Select-Object -First 1).Matches.Groups[1].Value
+          $packerVersion = (Select-String -Path libs/portable/Cargo.toml -Pattern '^version\s*=\s*"([^"]+)"' | Select-Object -First 1).Matches.Groups[1].Value
           $flutterVersion = (Select-String -Path flutter/pubspec.yaml -Pattern '^version:\s*([^+\s]+)' | Select-Object -First 1).Matches.Groups[1].Value
-          if ($cargoVersion -ne $expected -or $flutterVersion -ne $expected) {
-            throw "Version mismatch: release=$expected cargo=$cargoVersion flutter=$flutterVersion"
+          $lockVersions = Select-String -Path Cargo.lock -Pattern '^version = "([^"]+)"' -Context 1,0 |
+            Where-Object { $_.Context.PreContext -match '^name = "(rustdesk|rustdesk-portable-packer)"$' } |
+            ForEach-Object { $_.Matches.Groups[1].Value }
+          if ($cargoVersion -ne $expected -or $packerVersion -ne $expected -or $flutterVersion -ne $expected -or @($lockVersions | Where-Object { $_ -ne $expected }).Count -gt 0 -or @($lockVersions).Count -ne 2) {
+            throw "Version mismatch: release=$expected cargo=$cargoVersion packer=$packerVersion flutter=$flutterVersion lock=$($lockVersions -join ',')"
           }
           Write-Host "Version contract confirmed: $expected"
 

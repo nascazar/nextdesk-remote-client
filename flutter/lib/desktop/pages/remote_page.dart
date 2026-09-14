@@ -130,7 +130,14 @@ class _RemotePageState extends State<RemotePage>
     _remoteSessionTracker = RemoteSessionTracker.create(widget.nextDeskApi, widget.nextDeskToken);
     _ffi = FFI(widget.sessionId);
     Get.put<FFI>(_ffi, tag: widget.id);
+    _ffi.ffiModel.updateEventListener(
+      sessionId,
+      widget.id,
+      onConnectionReady: _remoteSessionTracker?.connected,
+    );
     _ffi.imageModel.addCallbackOnFirstImage((String peerId) {
+      final tracker = _remoteSessionTracker;
+      if (tracker != null) unawaited(tracker.connected());
       _ffi.canvasModel.activateLocalCursor();
       showKBLayoutTypeChooserIfNeeded(
           _ffi.ffiModel.pi.platform, _ffi.dialogManager);
@@ -155,11 +162,6 @@ class _RemotePageState extends State<RemotePage>
     });
     WakelockManager.enable(_uniqueKey);
 
-    _ffi.ffiModel.updateEventListener(
-      sessionId,
-      widget.id,
-      onConnectionReady: _remoteSessionTracker?.connected,
-    );
     if (!isWeb) bind.pluginSyncUi(syncTo: kAppTypeDesktopRemote);
     _ffi.qualityMonitorModel.checkShowQualityMonitor(sessionId);
     _ffi.dialogManager.loadMobileActionsOverlayVisible();

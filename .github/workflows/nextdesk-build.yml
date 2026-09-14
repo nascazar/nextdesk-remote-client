@@ -23,7 +23,7 @@ env:
   FLUTTER_WINDOWS_ARM_VERSION: "3.44.0"
   # for arm64 linux because official Dart SDK does not work
   FLUTTER_ELINUX_VERSION: "3.16.9"
-  TAG_NAME: "nextdesk-remote-v1.6.0"
+  TAG_NAME: "nextdesk-remote-v1.6.1"
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   # vcpkg version: 2025.08.27
   # If we change the `VCPKG COMMIT_ID`, please remember:
@@ -33,7 +33,7 @@ env:
   # 2. Update the `VCPKG_COMMIT_ID` in `ci.yml` and `playground.yml`.
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836" # 2025.01.13, got "/opt/artifacts/vcpkg/vcpkg: No such file or directory" with latest version
-  VERSION: "1.6.0"
+  VERSION: "1.6.1"
   NDK_VERSION: "r28c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
@@ -96,6 +96,21 @@ jobs:
       - name: Apply NextDesk branding and server configuration
         shell: pwsh
         run: .github/nextdesk/apply-nextdesk-brand.ps1
+
+      - name: Validate release version contract
+        shell: pwsh
+        run: |
+          $expected = "${{ env.VERSION }}"
+          $cargoVersion = (Select-String -Path Cargo.toml -Pattern '^version\s*=\s*"([^"]+)"' | Select-Object -First 1).Matches.Groups[1].Value
+          $packerVersion = (Select-String -Path libs/portable/Cargo.toml -Pattern '^version\s*=\s*"([^"]+)"' | Select-Object -First 1).Matches.Groups[1].Value
+          $flutterVersion = (Select-String -Path flutter/pubspec.yaml -Pattern '^version:\s*([^+\s]+)' | Select-Object -First 1).Matches.Groups[1].Value
+          $lockVersions = Select-String -Path Cargo.lock -Pattern '^version = "([^"]+)"' -Context 1,0 |
+            Where-Object { $_.Context.PreContext -match '^name = "(rustdesk|rustdesk-portable-packer)"$' } |
+            ForEach-Object { $_.Matches.Groups[1].Value }
+          if ($cargoVersion -ne $expected -or $packerVersion -ne $expected -or $flutterVersion -ne $expected -or @($lockVersions | Where-Object { $_ -ne $expected }).Count -gt 0 -or @($lockVersions).Count -ne 2) {
+            throw "Version mismatch: release=$expected cargo=$cargoVersion packer=$packerVersion flutter=$flutterVersion lock=$($lockVersions -join ',')"
+          }
+          Write-Host "Version contract confirmed: $expected"
 
       - name: Validate NextDesk product identity
         shell: pwsh

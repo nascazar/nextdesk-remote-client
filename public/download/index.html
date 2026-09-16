@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f9fc">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>NextDesk Remote | Asistencia remota segura</title>
+  <meta name="description" content="Descargue NextDesk Remote y reciba asistencia segura con su autorizacion.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #071d43;
+      --navy-2: #0b3d63;
+      --teal: #008c82;
+      --teal-soft: #b8efe7;
+      --ink-soft: #5a6f8e;
+      --line: #d9e7f0;
+      --surface: rgba(255, 255, 255, .94);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--navy);
+      font-family: "Manrope", sans-serif;
+      background:
+        radial-gradient(circle at 10% 55%, rgba(91, 216, 210, .20), transparent 31%),
+        radial-gradient(circle at 78% 18%, rgba(126, 191, 231, .20), transparent 33%),
+        linear-gradient(135deg, #f8fcff 0%, #eef7fb 55%, #e8f2f8 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      border-radius: 50%;
+      border: 1px solid rgba(25, 143, 155, .09);
+    }
+
+    body::before { width: 52vw; height: 52vw; right: -17vw; top: -26vw; }
+    body::after { width: 38vw; height: 38vw; left: -22vw; bottom: -23vw; }
+
+    .page {
+      width: min(1440px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 14px 0 22px;
+    }
+
+    .brand {
+      display: flex;
+      width: max-content;
+      margin: 0 auto 12px;
+      align-items: center;
+    }
+
+    .brand img { display: block; width: min(270px, 58vw); height: 68px; object-fit: contain; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(520px, .98fr) minmax(430px, 1.02fr);
+      min-height: 610px;
+      height: min(680px, calc(100vh - 112px));
+      overflow: hidden;
+      border: 1px solid rgba(153, 182, 201, .42);
+      border-radius: 34px;
+      background: rgba(255, 255, 255, .45);
+      box-shadow: 0 30px 90px rgba(20, 55, 84, .13);
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      padding: clamp(34px, 4.2vw, 58px);
+      background: var(--surface);
+    }
+
+    .content-inner { width: 100%; max-width: 680px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2.4px;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 28px;
+      height: 2px;
+      content: "";
+      background: var(--teal);
+    }
+
+    h1 {
+      max-width: 620px;
+      margin: 0;
+      font-size: clamp(42px, 4.2vw, 62px);
+      line-height: 1;
+      letter-spacing: -3.4px;
+    }
+
+    .lead {
+      max-width: 600px;
+      margin: 18px 0 22px;
+      color: var(--ink-soft);
+      font-size: clamp(15px, 1.2vw, 18px);
+      line-height: 1.55;
+    }
+
+    .steps {
+      display: grid;
+      gap: 11px;
+      margin: 0 0 22px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 13px;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .number {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #d9faf3, #aeece1);
+      color: var(--navy);
+      font-size: 15px;
+    }
+
+    .download {
+      display: flex;
+      width: 100%;
+      min-height: 56px;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(105deg, var(--navy), var(--navy-2));
+      box-shadow: 0 14px 30px rgba(7, 29, 67, .18);
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .download:hover { transform: translateY(-2px); box-shadow: 0 18px 34px rgba(7, 29, 67, .24); }
+    .download svg { width: 23px; height: 23px; }
+
+    .compatibility {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 11px;
+      margin-top: 12px;
+      color: #72839b;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .windows-mark {
+      display: grid;
+      grid-template-columns: repeat(2, 7px);
+      grid-template-rows: repeat(2, 7px);
+      gap: 2px;
+      transform: skewY(-4deg);
+    }
+
+    .windows-mark i { display: block; background: #607796; }
+    .dot { color: #afbdca; }
+
+    .trust {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 0;
+      color: #657994;
+      font-size: 12px;
+    }
+
+    .trust svg { width: 16px; height: 16px; color: var(--teal); }
+
+    .visual {
+      position: relative;
+      min-height: 610px;
+      background: #dfeef5 url("hero-dell.webp") center/cover no-repeat;
+    }
+
+    .visual::after {
+      position: absolute;
+      inset: auto 0 0;
+      height: 26%;
+      content: "";
+      background: linear-gradient(transparent, rgba(4, 34, 67, .20));
+    }
+
+    .consent-card {
+      position: absolute;
+      right: 34px;
+      bottom: 32px;
+      z-index: 2;
+      width: min(360px, calc(100% - 68px));
+      padding: 20px 22px;
+      border: 1px solid rgba(255, 255, 255, .56);
+      border-radius: 16px;
+      color: white;
+      background: rgba(5, 30, 64, .76);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 16px 35px rgba(2, 22, 47, .22);
+    }
+
+    .consent-card strong { display: block; margin-bottom: 5px; font-size: 14px; }
+    .consent-card span { color: rgba(255, 255, 255, .76); font-size: 12px; line-height: 1.5; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 8px 0;
+      color: #71839a;
+      font-size: 11px;
+    }
+
+    @media (max-width: 960px) {
+      .page { width: min(720px, calc(100% - 28px)); padding-top: 18px; }
+      .hero { grid-template-columns: 1fr; height: auto; }
+      .content { padding: 48px 34px; }
+      .visual { min-height: 430px; order: -1; background-position: center 32%; }
+      h1 { letter-spacing: -3px; }
+    }
+
+    @media (max-width: 560px) {
+      .page { width: calc(100% - 18px); padding-top: 20px; }
+      .brand { margin-bottom: 14px; }
+      .brand img { width: min(235px, 62vw); height: 58px; }
+      .hero { border-radius: 24px; }
+      .visual { min-height: 300px; }
+      .content { padding: 38px 24px 42px; }
+      h1 { font-size: 44px; letter-spacing: -2.8px; }
+      .lead { margin: 20px 0 28px; }
+      .download { min-height: 60px; font-size: 15px; }
+      .consent-card { right: 18px; bottom: 18px; width: calc(100% - 36px); }
+      footer { display: block; text-align: center; line-height: 1.8; }
+    }
+  </style>
+  <style id="viewport-fit-layout">
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100dvh;
+    }
+
+    @media (min-width: 861px) {
+      html,
+      body {
+        overflow: hidden;
+      }
+
+      body > main,
+      body > .page,
+      body > .page-shell,
+      body > .site-shell {
+        box-sizing: border-box;
+        display: grid;
+        gap: clamp(12px, 1.8vh, 26px);
+        grid-template-rows: auto minmax(0, 1fr);
+        height: 100dvh;
+        max-width: none;
+        min-height: 0;
+        padding: clamp(14px, 2vh, 28px) clamp(18px, 2.4vw, 46px);
+        width: 100%;
+      }
+
+      .brand,
+      .site-brand,
+      .page-brand,
+      header {
+        flex: 0 0 auto;
+        margin-block: 0;
+      }
+
+      .hero,
+      .download-hero,
+      .support-hero {
+        align-self: stretch;
+        height: 100%;
+        margin: 0 auto;
+        max-height: none;
+        max-width: 1800px;
+        min-height: 0;
+        width: 100%;
+      }
+
+      .hero-copy,
+      .hero-content,
+      .content {
+        box-sizing: border-box;
+        min-height: 0;
+        padding: clamp(28px, 4.2vh, 68px) clamp(30px, 4.4vw, 82px);
+      }
+
+      .hero-visual,
+      .hero-image,
+      .visual {
+        height: 100%;
+        min-height: 0;
+      }
+
+      .hero-visual img,
+      .hero-image img,
+      .visual img {
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
+      }
+
+      h1 {
+        font-size: clamp(2.65rem, min(4.7vw, 7.2vh), 5.4rem);
+        line-height: 0.98;
+      }
+
+      .steps,
+      .instructions {
+        gap: clamp(8px, 1.35vh, 18px);
+      }
+
+      .download-button,
+      .download-btn,
+      a[download] {
+        min-height: clamp(52px, 6.8vh, 66px);
+      }
+    }
+
+    @media (min-width: 1800px) {
+      body > main,
+      body > .page,
+      body > .page-shell,
+      body > .site-shell {
+        padding-inline: max(42px, calc((100vw - 1840px) / 2));
+      }
+    }
+
+    @media (max-width: 860px) {
+      html,
+      body {
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="brand"><img src="/nextdesk-logo.webp" alt="NextDesk"></header>
+
+    <section class="hero">
+      <div class="content">
+        <div class="content-inner">
+          <div class="eyebrow">NextDesk Remote</div>
+          <h1>Asistencia<br>remota segura</h1>
+          <p class="lead">Descargue NextDesk Remote, abra la aplicaci&oacute;n y comunique el c&oacute;digo al t&eacute;cnico que lo est&aacute; atendiendo.</p>
+
+          <ol class="steps">
+            <li class="step"><span class="number">1</span><span>Descargue NextDesk Remote.</span></li>
+            <li class="step"><span class="number">2</span><span>Abra la aplicaci&oacute;n y comunique el c&oacute;digo.</span></li>
+            <li class="step"><span class="number">3</span><span>Autorice la conexi&oacute;n cuando se le solicite.</span></li>
+          </ol>
+
+          <a class="download" href="/NextDeskRemote.exe" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+            Descargar para Windows
+          </a>
+
+          <div class="compatibility" aria-label="Compatible con Windows 10 y Windows 11">
+            <span class="windows-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span>Windows 10</span><span class="dot">|</span><span>Windows 11</span>
+            <span class="dot">&bull;</span><span>Versi&oacute;n 1.4.9 &bull; 25 MB</span>
+          </div>
+
+          <p class="trust">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            Usted mantiene el control en todo momento.
+          </p>
+        </div>
+      </div>
+
+      <div class="visual" role="img" aria-label="Cliente recibiendo asistencia remota segura"></div>
+    </section>
+
+    <footer><span>&copy; 2026 Nextcom de Costa Rica S.A.</span><span>Descarga oficial de NextDesk Remote</span></footer>
+  </main>
+</body>
+</html>

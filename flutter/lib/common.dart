@@ -3844,12 +3844,13 @@ Widget loadIcon(double size) {
           ));
 }
 
-var imcomingOnlyHomeSize = Size(280, 300);
+var imcomingOnlyHomeSize = Size(460, 540);
+Size? incomingOnlyMeasuredInsets;
 Size getIncomingOnlyHomeSize() {
-  final magicWidth = isWindows ? 11.0 : 2.0;
-  final magicHeight = 10.0;
+  final magicWidth = incomingOnlyMeasuredInsets?.width ?? (isWindows ? 11.0 : 2.0);
+  final frameHeight = incomingOnlyMeasuredInsets?.height ?? (kDesktopRemoteTabBarHeight + 10.0);
   return imcomingOnlyHomeSize +
-      Offset(magicWidth, kDesktopRemoteTabBarHeight + magicHeight);
+      Offset(magicWidth, frameHeight);
 }
 
 Size getIncomingOnlySettingsSize() {

@@ -6,6 +6,7 @@ test_dir="$(mktemp -d)"
 mkdir -p "$test_dir/lib/desktop/widgets" "$test_dir/assets" "$test_dir/test"
 cp flutter/lib/desktop/widgets/nextdesk_home_panel.dart "$test_dir/lib/desktop/widgets/"
 cp flutter/test/nextdesk_home_panel_test.dart "$test_dir/test/"
+cp .github/nextdesk/app_icon.png "$test_dir/assets/icon.png"
 cp flutter/assets/nextdesk-wordmark-white.svg flutter/assets/Manrope-Regular.ttf flutter/assets/Manrope-Semibold.ttf flutter/assets/Manrope-Bold.ttf "$test_dir/assets/"
 cat > "$test_dir/pubspec.yaml" <<'YAML'
 name: nextdesk_remote_interface

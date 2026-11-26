@@ -25,6 +25,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:window_size/window_size.dart' as window_size;
 import '../widgets/button.dart';
+import '../widgets/nextdesk_home_panel.dart';
 
 class DesktopHomePage extends StatefulWidget {
   const DesktopHomePage({Key? key}) : super(key: key);
@@ -79,6 +80,32 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   Widget buildLeftPane(BuildContext context) {
     final isIncomingOnly = bind.isIncomingOnly();
     final isOutgoingOnly = bind.isOutgoingOnly();
+    if (isIncomingOnly) {
+      return SizedBox(
+        width: 460,
+        child: NextDeskHomePanel(
+          code: gFFI.serverModel.serverId,
+          contentKey: _childKey,
+          scrollController: _leftPaneScrollController,
+          status: OnlineStatusWidget(onSvcStatusChanged: () {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && isInHomePage()) _updateWindowSize();
+            });
+          }),
+          controls: Column(children: [
+            buildPresetPasswordWarning(),
+            ChangeNotifierProvider.value(
+              value: gFFI.serverModel,
+              child: Consumer<ServerModel>(builder: (context, model, _) =>
+                model.approveMode == 'click' ? const SizedBox.shrink() :
+                  buildPasswordBoard2(context, model)),
+            ),
+            Obx(() => buildHelpCards(stateGlobal.updateUrl.value)),
+            buildPluginEntry(),
+          ]),
+        ),
+      );
+    }
     final children = <Widget>[
       if (!isOutgoingOnly) buildPresetPasswordWarning(),
       if (bind.isCustomClient())
@@ -867,8 +894,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     }
     if (renderObject is RenderBox) {
       final size = renderObject.size;
-      if (size != imcomingOnlyHomeSize) {
-        imcomingOnlyHomeSize = size;
+      final windowContentSize = Size(size.width, size.height.clamp(480.0, 640.0).toDouble());
+      if (windowContentSize != imcomingOnlyHomeSize) {
+        imcomingOnlyHomeSize = windowContentSize;
         windowManager.setSize(getIncomingOnlyHomeSize());
       }
     }

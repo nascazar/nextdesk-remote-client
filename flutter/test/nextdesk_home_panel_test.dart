@@ -31,11 +31,13 @@ void main() {
     String? clipboard;
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
       if (call.method == 'Clipboard.setData') clipboard = call.arguments['text'];
+      if (call.method == 'Clipboard.hasStrings') return {'value': false};
+      if (call.method == 'LiveText.isLiveTextInputAvailable') return false;
       return null;
     });
     addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
     await show(tester, controller);
-    expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull);
+    expect(tester.widget<FilledButton>(find.byWidgetPredicate((w) => w is FilledButton)).onPressed, isNull);
     controller.text = '123 456 789';
     await tester.pumpAndSettle();
     await tester.tap(find.text('Copiar código'));
@@ -50,13 +52,18 @@ void main() {
     expect(clipboard, '987 654 321');
     controller.text = '';
     await tester.pumpAndSettle();
-    expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull);
+    expect(tester.widget<FilledButton>(find.byWidgetPredicate((w) => w is FilledButton)).onPressed, isNull);
   });
 
   testWidgets('Clipboard failure permits manual selection without reporting success', (tester) async {
     final controller = TextEditingController(text: '123 456 789');
     addTearDown(controller.dispose);
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (_) async => throw PlatformException(code: 'clipboard'));
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') throw PlatformException(code: 'clipboard');
+      if (call.method == 'Clipboard.hasStrings') return {'value': false};
+      if (call.method == 'LiveText.isLiveTextInputAvailable') return false;
+      return null;
+    });
     addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
     await show(tester, controller);
     await tester.tap(find.text('Copiar código'));

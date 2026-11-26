@@ -6,7 +6,7 @@ test_dir="$(mktemp -d)"
 mkdir -p "$test_dir/lib/desktop/widgets" "$test_dir/assets" "$test_dir/test"
 cp flutter/lib/desktop/widgets/nextdesk_home_panel.dart "$test_dir/lib/desktop/widgets/"
 cp flutter/test/nextdesk_home_panel_test.dart "$test_dir/test/"
-cp flutter/assets/nextdesk-wordmark-white.svg flutter/assets/Manrope-Variable.ttf "$test_dir/assets/"
+cp flutter/assets/nextdesk-wordmark-white.svg flutter/assets/Manrope-Regular.ttf flutter/assets/Manrope-Semibold.ttf flutter/assets/Manrope-Bold.ttf "$test_dir/assets/"
 cat > "$test_dir/pubspec.yaml" <<'YAML'
 name: nextdesk_remote_interface
 environment:
@@ -25,7 +25,12 @@ flutter:
   fonts:
     - family: Manrope
       fonts:
-        - asset: assets/Manrope-Variable.ttf
+        - asset: assets/Manrope-Regular.ttf
+          weight: 400
+        - asset: assets/Manrope-Semibold.ttf
+          weight: 600
+        - asset: assets/Manrope-Bold.ttf
+          weight: 700
 YAML
 cd "$test_dir"
 flutter pub get

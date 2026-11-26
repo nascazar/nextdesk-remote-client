@@ -155,7 +155,12 @@ flutter:
   fonts:
     - family: Manrope
       fonts:
-        - asset: assets/Manrope-Variable.ttf
+        - asset: assets/Manrope-Regular.ttf
+          weight: 400
+        - asset: assets/Manrope-Semibold.ttf
+          weight: 600
+        - asset: assets/Manrope-Bold.ttf
+          weight: 700
     - family: GestureIcons
       fonts:
         - asset: assets/gestures.ttf

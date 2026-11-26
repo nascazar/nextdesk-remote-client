@@ -117,12 +117,14 @@ class _NextDeskHomePanelState extends State<NextDeskHomePanel> {
           ),
           const Padding(
             padding: EdgeInsets.fromLTRB(28, 0, 28, 16),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Icon(Icons.verified_user_outlined, size: 18, color: blue),
-              SizedBox(width: 10),
-              Expanded(child: Text('Vos autorizás cada conexión.',
-                style: TextStyle(color: muted, fontSize: 13, height: 1.4))),
-            ]),
+            child: Text.rich(
+              TextSpan(children: [
+                TextSpan(text: 'Powered by ', style: TextStyle(fontWeight: FontWeight.w700)),
+                TextSpan(text: 'Nextcom de Costa Rica'),
+              ]),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: muted, fontSize: 13, height: 1.4),
+            ),
           ),
           Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 20), child: widget.controls),
         ]),

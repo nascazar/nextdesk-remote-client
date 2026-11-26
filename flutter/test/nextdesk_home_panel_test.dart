@@ -84,6 +84,8 @@ void main() {
         addTearDown(controller.dispose);
         await show(tester, controller, size: viewport, scale: scale);
         expect(tester.takeException(), isNull);
+        expect(find.byWidgetPredicate((w) => w is Text &&
+          w.textSpan?.toPlainText() == 'Powered by Nextcom de Costa Rica'), findsOneWidget);
         await tester.ensureVisible(find.text('Instalar'));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);

@@ -56,11 +56,16 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   final RxBool _block = false.obs;
 
   final GlobalKey _childKey = GlobalKey();
+  final GlobalKey _footerKey = GlobalKey();
+  bool _sizingHome = false;
+  bool _sizeHomeAgain = false;
+  bool _sizeHomeScheduled = false;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final isIncomingOnly = bind.isIncomingOnly();
+    if (isIncomingOnly) return _buildBlock(child: buildLeftPane(context));
     return _buildBlock(
         child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,6 +91,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         child: NextDeskHomePanel(
           code: gFFI.serverModel.serverId,
           contentKey: _childKey,
+          footerKey: _footerKey,
+          onContentSizeChanged: _scheduleHomeSize,
           scrollController: _leftPaneScrollController,
           status: OnlineStatusWidget(onSvcStatusChanged: () {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -323,6 +330,24 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final textColor = Theme.of(context).textTheme.titleLarge?.color;
     final showOneTime = model.approveMode != 'click' &&
         model.verificationMethod != kUsePermanentPassword;
+    if (bind.isIncomingOnly()) {
+      return NextDeskPasswordField(
+        password: model.serverPasswd,
+        label: translate('One-time Password'),
+        onCopy: showOneTime ? () {
+          Clipboard.setData(ClipboardData(text: model.serverPasswd.text));
+          showToast(translate('Copied'));
+        } : null,
+        actions: [
+          if (showOneTime) IconButton(
+            tooltip: translate('Refresh Password'), icon: const Icon(Icons.refresh, size: 20),
+            onPressed: () => bind.mainUpdateTemporaryPassword()),
+          if (!bind.isDisableSettings()) IconButton(
+            tooltip: translate('Change Password'), icon: const Icon(Icons.edit_outlined, size: 20),
+            onPressed: () => DesktopSettingPage.switch2page(SettingsTabKey.safety)),
+        ],
+      );
+    }
     return Container(
       margin: EdgeInsets.only(left: 20.0, right: 16, top: 13, bottom: 13),
       child: Row(
@@ -583,19 +608,16 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       }
     }
     if (bind.isIncomingOnly()) {
-      return Align(
-        alignment: Alignment.centerRight,
-        child: OutlinedButton(
-          onPressed: () {
+      return NextDeskExitButton(
+          onExit: () {
             SystemNavigator.pop(); // Close the application
             // https://github.com/flutter/flutter/issues/66631
             if (isWindows) {
               exit(0);
             }
           },
-          child: Text(translate('Quit')),
-        ),
-      ).marginAll(14);
+          label: translate('Quit'),
+      );
     }
     return Container();
   }
@@ -887,18 +909,47 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     WidgetsBinding.instance.addObserver(this);
   }
 
-  _updateWindowSize() {
-    RenderObject? renderObject = _childKey.currentContext?.findRenderObject();
-    if (renderObject == null) {
-      return;
-    }
-    if (renderObject is RenderBox) {
-      final size = renderObject.size;
-      final windowContentSize = Size(size.width, size.height.clamp(480.0, 640.0).toDouble());
-      if (windowContentSize != imcomingOnlyHomeSize) {
-        imcomingOnlyHomeSize = windowContentSize;
-        windowManager.setSize(getIncomingOnlyHomeSize());
+  void _scheduleHomeSize() {
+    if (!mounted || _sizeHomeScheduled) return;
+    _sizeHomeScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _sizeHomeScheduled = false;
+      if (mounted && isInHomePage()) unawaited(_updateWindowSize());
+    });
+  }
+
+  Future<void> _updateWindowSize() async {
+    if (!mounted || !bind.isIncomingOnly()) return;
+    if (_sizingHome) { _sizeHomeAgain = true; return; }
+    _sizingHome = true;
+    try {
+      final outer = await windowManager.getSize();
+      final info = await window_size.getWindowInfo();
+      if (!mounted || !isInHomePage()) return;
+      final body = _childKey.currentContext?.findRenderObject();
+      final footer = _footerKey.currentContext?.findRenderObject();
+      final page = context.size;
+      if (body is! RenderBox || footer is! RenderBox || page == null ||
+          !body.hasSize || !footer.hasSize || outer.width <= 0) return;
+      // Measure the actual native/custom title bar instead of guessing its height.
+      final chrome = Size((outer.width - page.width).clamp(0.0, 200.0).toDouble(),
+        (outer.height - page.height).clamp(0.0, 200.0).toDouble());
+      final ratio = info.frame.width / outer.width;
+      final screen = info.screen;
+      final workArea = screen != null && ratio.isFinite && ratio > 0
+        ? Size(screen.visibleFrame.width / ratio, screen.visibleFrame.height / ratio) : null;
+      final target = nextDeskFrameSize(content: Size(body.size.width,
+        body.size.height + footer.size.height), chrome: chrome, workArea: workArea);
+      incomingOnlyMeasuredInsets = chrome;
+      imcomingOnlyHomeSize = Size(target.width - chrome.width, target.height - chrome.height);
+      if ((outer.width - target.width).abs() > 1 || (outer.height - target.height).abs() > 1) {
+        await windowManager.setSize(target);
       }
+    } catch (error) {
+      debugPrint('NextDesk window sizing failed: $error');
+    } finally {
+      _sizingHome = false;
+      if (_sizeHomeAgain) { _sizeHomeAgain = false; _scheduleHomeSize(); }
     }
   }
 

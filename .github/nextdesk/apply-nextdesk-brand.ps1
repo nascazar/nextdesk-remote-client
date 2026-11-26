@@ -31,6 +31,7 @@ Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "flutter/ass
 Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "res/icon.ico" -Force
 Copy-Item -LiteralPath ".github/nextdesk/app_icon.ico" -Destination "res/tray-icon.ico" -Force
 Copy-Item -LiteralPath ".github/nextdesk/app_icon.png" -Destination "res/icon.png" -Force
+Copy-Item -LiteralPath ".github/nextdesk/app_icon.png" -Destination "flutter/assets/icon.png" -Force
 Copy-Item -LiteralPath ".github/nextdesk/nextdesk_logo.png" -Destination "flutter/assets/logo.png" -Force
 Copy-Item -LiteralPath ".github/nextdesk/nextdesk_logo.png" -Destination "flutter/assets/logo_light.png" -Force
 Copy-Item -LiteralPath ".github/nextdesk/nextdesk_logo.png" -Destination "flutter/assets/logo_dark.png" -Force

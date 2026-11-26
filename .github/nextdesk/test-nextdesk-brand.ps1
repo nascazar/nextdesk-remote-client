@@ -25,4 +25,8 @@ Assert-Contains "src/platform/windows.rs" '"rustdesk".to_owned()'
 Assert-Contains "res/msi/Package/Components/Regs.wxs" 'Key="rustdesk"'
 Assert-Contains "res/msi/Package/Components/Regs.wxs" 'Value="URL:NextDesk Remote Protocol"'
 
-Write-Host "NextDesk product identity and protocol registration are valid."
+$expectedIcon = (Get-FileHash -LiteralPath ".github/nextdesk/app_icon.png" -Algorithm SHA256).Hash
+if ((Get-FileHash -LiteralPath "flutter/assets/icon.png" -Algorithm SHA256).Hash -ne $expectedIcon) {
+    throw "The Flutter window bar does not use the NextDesk icon"
+}
+Write-Host "NextDesk product identity, window icon and protocol registration are valid."

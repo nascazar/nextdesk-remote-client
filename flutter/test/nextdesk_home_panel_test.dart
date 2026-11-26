@@ -16,6 +16,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await (FontLoader('Manrope')..addFont(rootBundle.load('assets/Manrope-Variable.ttf'))).load();
+    await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
     await tester.pumpWidget(MaterialApp(home: MediaQuery(
       data: MediaQueryData(size: size, textScaler: TextScaler.linear(scale)),
       child: Scaffold(body: RepaintBoundary(key: const ValueKey('capture'),

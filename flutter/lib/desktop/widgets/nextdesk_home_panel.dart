@@ -39,7 +39,9 @@ class _NextDeskHomePanelState extends State<NextDeskHomePanel> {
     return Theme(
       data: Theme.of(context).copyWith(textTheme:
         Theme.of(context).textTheme.apply(fontFamily: 'Manrope')),
-      child: ColoredBox(
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(fontFamily: 'Manrope'),
+        child: ColoredBox(
       color: const Color(0xFFF3F7FA),
       child: SingleChildScrollView(
         controller: widget.scrollController,
@@ -124,6 +126,7 @@ class _NextDeskHomePanelState extends State<NextDeskHomePanel> {
           ),
           Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 20), child: widget.controls),
         ]),
+        ),
       ),
       ),
     );
